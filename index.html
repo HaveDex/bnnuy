@@ -74,7 +74,7 @@
     </style>
 </head>
 <body>
-    <h1>🐰 Bnnuy Gallery 🐰</h1>
+    <h1>🐇</h1>
     <div class="gallery" id="gallery"></div>
     <div class="loading" id="loading">Loading bunnies...</div>
 
@@ -88,54 +88,52 @@
         
         async function loadImages() {
             let loadedCount = 0;
+            let consecutiveFails = 0;
             
             for (let i = 1; i <= 999; i++) {
-                // Try both .gif and .png extensions
+                // If we've had 5 consecutive failures, assume we've reached the end
+                if (consecutiveFails >= 5) {
+                    break;
+                }
+                
                 const extensions = ['gif', 'png', 'jpg', 'jpeg'];
+                let found = false;
                 
                 for (const ext of extensions) {
-                    const url = `${baseURL}${i}-*.${ext}`;
+                    const url = `${baseURL}bunny ${i}.${ext}`;
                     
-                    // Try to load the image
-                    const img = new Image();
-                    img.onload = function() {
-                        const imgElement = document.createElement('img');
-                        imgElement.src = this.src;
-                        imgElement.alt = `Bunny ${i}`;
-                        gallery.appendChild(imgElement);
-                        loadedCount++;
-                        updateLoadingText(loadedCount);
-                    };
-                    img.onerror = function() {
-                        // Image doesn't exist, skip
-                    };
-                    
-                    // Try common naming patterns
-                    const patterns = [
-                        `${i}-bunny.${ext}`,
-                        `${i}-rabbit.${ext}`,
-                        `${i}-bnnuy.${ext}`,
-                        `${i}.${ext}`
-                    ];
-                    
-                    for (const pattern of patterns) {
-                        img.src = baseURL + pattern;
-                        await new Promise(resolve => setTimeout(resolve, 50));
+                    try {
+                        const response = await fetch(url, { method: 'HEAD' });
+                        if (response.ok) {
+                            const imgElement = document.createElement('img');
+                            imgElement.src = url;
+                            imgElement.alt = `Bunny ${i}`;
+                            gallery.appendChild(imgElement);
+                            loadedCount++;
+                            consecutiveFails = 0;
+                            found = true;
+                            updateLoadingText(loadedCount);
+                            break;
+                        }
+                    } catch (e) {
+                        // File doesn't exist, try next extension
                     }
+                }
+                
+                if (!found) {
+                    consecutiveFails++;
                 }
             }
             
-            setTimeout(() => {
-                if (loadedCount === 0) {
-                    loading.textContent = 'No bunnies found. Make sure to update the baseURL in the script!';
-                } else {
-                    loading.style.display = 'none';
-                }
-            }, 3000);
+            if (loadedCount === 0) {
+                loading.textContent = 'No bunnies found. Make sure to update the baseURL in the script!';
+            } else {
+                loading.textContent = `Loaded ${loadedCount} bunnies! 🐰`;
+            }
         }
         
         function updateLoadingText(count) {
-            loading.textContent = `Loaded ${count} bunnies...`;
+            loading.textContent = `Loading bunnies... (${count} found so far)`;
         }
         
         loadImages();
