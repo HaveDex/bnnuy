@@ -42,6 +42,12 @@
             background: white;
             padding: 0.5rem;
             cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .gallery img:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.25);
         }
 
         @media (max-width: 1200px) {
@@ -67,6 +73,27 @@
                 grid-template-columns: repeat(1, 200px);
             }
         }
+
+        .copy-toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(0, 0, 0, 0.85);
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            z-index: 1000;
+        }
+
+        .copy-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -84,11 +111,22 @@
         <img src="blanket.webp" alt="Bunny 10">
     </div>
 
+    <div class="copy-toast" id="copyToast">Copied to clipboard</div>
+
     <script>
+        var toast = document.getElementById('copyToast');
+        var toastTimeout;
+
         document.querySelectorAll('.gallery img').forEach(function (img) {
             img.addEventListener('click', function () {
                 var url = new URL(img.getAttribute('src'), window.location.href).href;
                 navigator.clipboard.writeText(url);
+
+                clearTimeout(toastTimeout);
+                toast.classList.add('show');
+                toastTimeout = setTimeout(function () {
+                    toast.classList.remove('show');
+                }, 1800);
             });
         });
     </script>
