@@ -33,15 +33,7 @@
             margin: 0 auto;
         }
 
-        .gallery-item {
-            cursor: pointer;
-            border: none;
-            background: none;
-            padding: 0;
-            display: block;
-        }
-
-        .gallery-item img {
+        .gallery img {
             width: 200px;
             height: auto;
             object-fit: contain;
@@ -49,39 +41,7 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             background: white;
             padding: 0.5rem;
-            pointer-events: none;
-            transition: transform 0.1s ease, box-shadow 0.1s ease;
-        }
-
-        .gallery-item:hover img {
-            box-shadow: 0 4px 14px rgba(0,0,0,0.18);
-            transform: translateY(-2px);
-        }
-
-        .gallery-item:active img {
-            transform: translateY(0);
-        }
-
-        /* Toast notification for copy confirmation */
-        #toast {
-            position: fixed;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            background: rgba(30, 30, 30, 0.9);
-            color: #fff;
-            padding: 0.6rem 1.2rem;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-            z-index: 1000;
-        }
-
-        #toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
+            cursor: pointer;
         }
 
         @media (max-width: 1200px) {
@@ -112,62 +72,23 @@
 <body>
     <h1>🐇</h1>
     <div class="gallery">
-        <button class="gallery-item" data-filename="shocked_loaf.webp"><img src="shocked_loaf.webp" alt="Bunny 1"></button>
-        <button class="gallery-item" data-filename="tongue.webp"><img src="tongue.webp" alt="Bunny 2"></button>
-        <button class="gallery-item" data-filename="hungry.webp"><img src="hungry.webp" alt="Bunny 3"></button>
-        <button class="gallery-item" data-filename="ear.webp"><img src="ear.webp" alt="Bunny 4"></button>
-        <button class="gallery-item" data-filename="sniffa.webp"><img src="sniffa.webp" alt="Bunny 5"></button>
-        <button class="gallery-item" data-filename="ough.webp"><img src="ough.webp" alt="Bunny 6"></button>
-        <button class="gallery-item" data-filename="rest.webp"><img src="rest.webp" alt="Bunny 7"></button>
-        <button class="gallery-item" data-filename="blomp.webp"><img src="blomp.webp" alt="Bunny 8"></button>
-        <button class="gallery-item" data-filename="sad.webp"><img src="sad.webp" alt="Bunny 9"></button>
-        <button class="gallery-item" data-filename="blanket.webp"><img src="blanket.webp" alt="Bunny 10"></button>
+        <img src="bunny-round.webp" alt="Bunny 1">
+        <img src="bunny-tongue.webp" alt="Bunny 2">
+        <img src="bunny-hungry.webp" alt="Bunny 3">
+        <img src="bunny-ear.webp" alt="Bunny 4">
+        <img src="bunny-nose2.webp" alt="Bunny 5">
+        <img src="bunny-ough.webp" alt="Bunny 6">
+        <img src="bunny-rest.webp" alt="Bunny 7">
+        <img src="bunny-blomp.webp" alt="Bunny 8">
+        <img src="bunny-sad.webp" alt="Bunny 9">
+        <img src="bunny-blanket.webp" alt="Bunny 10">
     </div>
 
-    <div id="toast">Copied!</div>
-
     <script>
-        const toast = document.getElementById('toast');
-        let toastTimeout;
-
-        function showToast(message) {
-            toast.textContent = message;
-            toast.classList.add('show');
-            clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => {
-                toast.classList.remove('show');
-            }, 1200);
-        }
-
-        async function copyText(text) {
-            try {
-                await navigator.clipboard.writeText(text);
-                return true;
-            } catch (err) {
-                // Fallback for older browsers / non-secure contexts
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                textarea.style.position = 'fixed';
-                textarea.style.opacity = '0';
-                document.body.appendChild(textarea);
-                textarea.select();
-                let success = false;
-                try {
-                    success = document.execCommand('copy');
-                } catch (e) {
-                    success = false;
-                }
-                document.body.removeChild(textarea);
-                return success;
-            }
-        }
-
-        document.querySelectorAll('.gallery-item').forEach(item => {
-            item.addEventListener('click', async () => {
-                const filename = item.getAttribute('data-filename');
-                const url = new URL(filename, window.location.href).href;
-                const ok = await copyText(url);
-                showToast(ok ? 'Copied!' : 'Copy failed');
+        document.querySelectorAll('.gallery img').forEach(function (img) {
+            img.addEventListener('click', function () {
+                var url = new URL(img.getAttribute('src'), window.location.href).href;
+                navigator.clipboard.writeText(url);
             });
         });
     </script>
